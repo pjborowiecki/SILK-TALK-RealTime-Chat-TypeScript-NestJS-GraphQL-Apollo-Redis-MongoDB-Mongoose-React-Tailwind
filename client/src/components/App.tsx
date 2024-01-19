@@ -1,5 +1,10 @@
-function App(): JSX.Element {
-  return <main>Hello World</main>
-}
+import { ThemeSwitch } from "@/components/theme-switch"
 
-export default App
+export function App(): JSX.Element {
+  return (
+    <main className="font-sans antialiased">
+      <ThemeSwitch />
+      <h1>Hello World</h1>
+    </main>
+  )
+}
