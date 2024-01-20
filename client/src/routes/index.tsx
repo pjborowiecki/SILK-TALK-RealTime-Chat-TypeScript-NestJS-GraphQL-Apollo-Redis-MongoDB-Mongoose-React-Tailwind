@@ -1,13 +1,6 @@
 import { FileRoute } from "@tanstack/react-router"
+import { LandingPage } from "@/pages/landing-page"
 
 export const Route = new FileRoute("/").createRoute({
-  component: Home,
+  component: LandingPage,
 })
-
-function Home() {
-  return (
-    <div className="p-2">
-      <h3>Welcome Home!</h3>
-    </div>
-  )
-}

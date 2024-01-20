@@ -3,37 +3,31 @@
 // Import Routes
 
 import { Route as rootRoute } from './routes/__root'
-import { Route as LayoutImport } from './routes/_layout'
+import { Route as SignupImport } from './routes/signup'
+import { Route as SigninImport } from './routes/signin'
+import { Route as AppImport } from './routes/app'
 import { Route as IndexImport } from './routes/index'
-import { Route as Layoutlayout2Import } from './routes/_layout/_layout-2'
-import { Route as Layoutlayout2LayoutBImport } from './routes/_layout/_layout-2/layout-b'
-import { Route as Layoutlayout2LayoutAImport } from './routes/_layout/_layout-2/layout-a'
 
 // Create/Update Routes
 
-const LayoutRoute = LayoutImport.update({
-  id: '/_layout',
+const SignupRoute = SignupImport.update({
+  path: '/signup',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const SigninRoute = SigninImport.update({
+  path: '/signin',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const AppRoute = AppImport.update({
+  path: '/app',
   getParentRoute: () => rootRoute,
 } as any)
 
 const IndexRoute = IndexImport.update({
   path: '/',
   getParentRoute: () => rootRoute,
-} as any)
-
-const Layoutlayout2Route = Layoutlayout2Import.update({
-  id: '/_layout-2',
-  getParentRoute: () => LayoutRoute,
-} as any)
-
-const Layoutlayout2LayoutBRoute = Layoutlayout2LayoutBImport.update({
-  path: '/layout-b',
-  getParentRoute: () => Layoutlayout2Route,
-} as any)
-
-const Layoutlayout2LayoutARoute = Layoutlayout2LayoutAImport.update({
-  path: '/layout-a',
-  getParentRoute: () => Layoutlayout2Route,
 } as any)
 
 // Populate the FileRoutesByPath interface
@@ -44,21 +38,17 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexImport
       parentRoute: typeof rootRoute
     }
-    '/_layout': {
-      preLoaderRoute: typeof LayoutImport
+    '/app': {
+      preLoaderRoute: typeof AppImport
       parentRoute: typeof rootRoute
     }
-    '/_layout/_layout-2': {
-      preLoaderRoute: typeof Layoutlayout2Import
-      parentRoute: typeof LayoutImport
+    '/signin': {
+      preLoaderRoute: typeof SigninImport
+      parentRoute: typeof rootRoute
     }
-    '/_layout/_layout-2/layout-a': {
-      preLoaderRoute: typeof Layoutlayout2LayoutAImport
-      parentRoute: typeof Layoutlayout2Import
-    }
-    '/_layout/_layout-2/layout-b': {
-      preLoaderRoute: typeof Layoutlayout2LayoutBImport
-      parentRoute: typeof Layoutlayout2Import
+    '/signup': {
+      preLoaderRoute: typeof SignupImport
+      parentRoute: typeof rootRoute
     }
   }
 }
@@ -67,10 +57,7 @@ declare module '@tanstack/react-router' {
 
 export const routeTree = rootRoute.addChildren([
   IndexRoute,
-  LayoutRoute.addChildren([
-    Layoutlayout2Route.addChildren([
-      Layoutlayout2LayoutARoute,
-      Layoutlayout2LayoutBRoute,
-    ]),
-  ]),
+  AppRoute,
+  SigninRoute,
+  SignupRoute,
 ])
