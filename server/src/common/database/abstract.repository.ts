@@ -1,27 +1,24 @@
 import { Logger, NotFoundException } from '@nestjs/common';
-import { Model, Types, FilterQuery, UpdateQuery } from 'mongoose';
+import { FilterQuery, Model, Types, UpdateQuery } from 'mongoose';
 
-import { AbstractDocument } from 'src/common/database/abstract.schema';
+import { AbstractEntity } from 'src/common/database/abstract.entity';
 
-export abstract class AbstractRepository<TDocument extends AbstractDocument> {
+export abstract class AbstractRepository<T extends AbstractEntity> {
   protected abstract readonly logger: Logger;
 
-  constructor(protected readonly model: Model<TDocument>) {}
+  constructor(public readonly model: Model<T>) {}
 
-  async create(document: Omit<TDocument, '_id'>): Promise<TDocument> {
+  async create(document: Omit<T, '_id'>): Promise<T> {
     const createdDocument = new this.model({
       ...document,
       _id: new Types.ObjectId(),
     });
-    return (await createdDocument.save()).toJSON() as TDocument;
+    return (await createdDocument.save()).toJSON() as unknown as T;
   }
 
-  async findOne(filterQuery: FilterQuery<TDocument>): Promise<TDocument> {
-    const document = (await this.model.findOne(
-      filterQuery,
-      {},
-      { lean: true },
-    )) as TDocument;
+  async findOne(filterQuery: FilterQuery<T>): Promise<T> {
+    const document = await this.model.findOne(filterQuery, {}, { lean: true });
+
     if (!document) {
       this.logger.warn(
         'Provided filter query resulted in no documents found',
@@ -29,17 +26,19 @@ export abstract class AbstractRepository<TDocument extends AbstractDocument> {
       );
       throw new NotFoundException('Document not found');
     }
-    return document;
+
+    return document as unknown as T;
   }
 
   async findOneAndUpdate(
-    filterQuery: FilterQuery<TDocument>,
-    update: UpdateQuery<TDocument>,
-  ): Promise<TDocument> {
-    const document = (await this.model.findOneAndUpdate(filterQuery, update, {
+    filterQuery: FilterQuery<T>,
+    update: UpdateQuery<T>,
+  ): Promise<T> {
+    const document = await this.model.findOneAndUpdate(filterQuery, update, {
       lean: true,
       new: true,
-    })) as TDocument;
+    });
+
     if (!document) {
       this.logger.warn(
         'Provided filter query resulted in no documents found',
@@ -47,22 +46,17 @@ export abstract class AbstractRepository<TDocument extends AbstractDocument> {
       );
       throw new NotFoundException('Document not found');
     }
-    return document;
+
+    return document as unknown as T;
   }
 
-  async find(filterQuery: FilterQuery<TDocument>): Promise<TDocument[]> {
-    return (await this.model.find(
-      filterQuery,
-      {},
-      { lean: true },
-    )) as TDocument[];
+  async find(filterQuery: FilterQuery<T>): Promise<T[]> {
+    return this.model.find(filterQuery, {}, { lean: true }) as unknown as T[];
   }
 
-  async findOneAndDelete(
-    filterQuery: FilterQuery<TDocument>,
-  ): Promise<TDocument> {
-    return (await this.model.findOneAndDelete(filterQuery, {
+  async findOneAndDelete(filterQuery: FilterQuery<T>): Promise<T> {
+    return this.model.findOneAndDelete(filterQuery, {
       lean: true,
-    })) as TDocument;
+    }) as unknown as T;
   }
 }
