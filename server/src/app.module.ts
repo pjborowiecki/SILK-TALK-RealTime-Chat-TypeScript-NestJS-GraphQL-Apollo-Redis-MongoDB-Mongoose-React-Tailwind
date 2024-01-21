@@ -15,12 +15,13 @@ import { AppService } from 'src/app.service';
     ConfigModule.forRoot({
       isGlobal: true,
       validationSchema: Joi.object({
-        MONGODB_URI: Joi.string().required(),
+        DATABASE_URI: Joi.string().required(),
       }),
     }),
     LoggerModule.forRootAsync({
       useFactory: (configService: ConfigService) => {
-        const isProduction = configService.get('NODE_ENV') === 'production';
+        const isProduction =
+          configService.getOrThrow<string>('NODE_ENV') === 'production';
         return {
           pinoHttp: {
             transport: isProduction
