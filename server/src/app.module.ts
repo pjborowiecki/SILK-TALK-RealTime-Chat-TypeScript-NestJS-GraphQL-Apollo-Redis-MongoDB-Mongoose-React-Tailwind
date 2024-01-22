@@ -10,6 +10,7 @@ import { DatabaseModule } from 'src/common/database/database.module';
 import { UsersModule } from 'src/users/users.module';
 import { AppController } from 'src/app.controller';
 import { AppService } from 'src/app.service';
+import { AuthModule } from './auth/auth.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -44,6 +45,7 @@ import { AppService } from 'src/app.service';
     }),
     DatabaseModule,
     UsersModule,
+    AuthModule,
   ],
   controllers: [AppController],
   providers: [AppService],

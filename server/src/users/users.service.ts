@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
 
 import { UsersRepository } from 'src/users/users.repository';
@@ -14,6 +14,7 @@ export class UsersService {
   }
 
   async create(createUserInput: CreateUserInput) {
+    // TODO: Password mismatch check
     return this.usersRepository.create({
       ...createUserInput,
       password: await this.hashPassword(createUserInput.password),
@@ -47,5 +48,13 @@ export class UsersService {
 
   async remove(_id: string) {
     return this.usersRepository.findOneAndDelete({ _id });
+  }
+
+  async verifyUser(email: string, password: string) {
+    const user = await this.usersRepository.findOne({ email });
+    const validPassword = await bcrypt.compare(password, user.password);
+    if (!validPassword)
+      throw new UnauthorizedException('Invalid email or password');
+    return user;
   }
 }
