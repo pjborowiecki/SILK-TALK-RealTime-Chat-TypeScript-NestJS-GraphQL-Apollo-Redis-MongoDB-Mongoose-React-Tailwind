@@ -1,6 +1,6 @@
 # SilkTalk Real-Time Chat
 
-** WORK IN PROGRESS! **
+**WORK IN PROGRESS!**
 
 This portfolio project focuses on building a real-world, full-stack chatting application with scalability and production-grade quality.
 
